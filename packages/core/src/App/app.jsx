@@ -1,27 +1,24 @@
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import PropTypes from 'prop-types';
-
 import { APIProvider, useMobileBridge } from '@deriv/api';
 import { Loading } from '@deriv/components';
 import { initFormErrorMessages, setUrlLanguage, setWebsocket } from '@deriv/shared';
 import { StoreProvider } from '@deriv/stores';
 import { BreakpointProvider } from '@deriv-com/quill-ui';
 import { getInitialLanguage, initializeI18n, TranslationProvider } from '@deriv-com/translations';
-
 import { clearTokens, exchangeCodeForToken } from 'Services/oauth';
 import WS from 'Services/ws-methods';
-
 import { FORM_ERROR_MESSAGES } from '../Constants/form-error-messages';
-
 import AppContent from './AppContent';
-
 import 'Sass/app.scss';
 
 const App = ({ root_store }) => {
     const i18nInstance = initializeI18n({
         cdnUrl: process.env.TRANSLATIONS_CDN_URL || '',
+        useSuspense: false,
     });
+
     const l = window.location;
     const base = l.pathname.split('/')[1];
     const has_base = /^\/(br_)/.test(l.pathname);
@@ -32,7 +29,7 @@ const App = ({ root_store }) => {
     const { isBridgeAvailable, sendBridgeEvent } = useMobileBridge();
 
     // Handle OAuth2 callback — the auth server redirects back to / with ?code=...&state=...
-    // No separate /callback route needed; we handle it inline here on every mount.
+    // No separate /callback route needs; we handle it inline here on every mount.
     React.useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const code = params.get('code');
@@ -56,12 +53,11 @@ const App = ({ root_store }) => {
             cleanURL();
             return;
         }
-
         sessionStorage.removeItem('oauth_csrf_token');
 
         exchangeCodeForToken(code)
             .then(() => {
-                // Token is now in sessionStorage. Reload to /  so initStore
+                // Token is now in sessionStorage. Reload to / so initStore
                 // picks it up on fresh boot — avoids the race where onClientInit
                 // already ran before the token exchange completed.
                 window.location.replace('/');
@@ -96,12 +92,11 @@ const App = ({ root_store }) => {
             root_store.ui.setDarkMode(false);
         }
 
-        // TODO: [translation-to-shared]: add translation implemnentation in shared
+        // TODO: [translation-to-shared]: add translation implementation in shared
         setUrlLanguage(language);
         initFormErrorMessages(FORM_ERROR_MESSAGES);
         root_store.common.setPlatform();
         loadSmartchartsStyles();
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -116,8 +111,8 @@ const App = ({ root_store }) => {
 
     React.useEffect(() => {
         const html = document?.querySelector('html');
-
         if (!html) return;
+
         if (is_dark_mode) {
             html.classList?.remove('light');
             html.classList?.add('dark');
