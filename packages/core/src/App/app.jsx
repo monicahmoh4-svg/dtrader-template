@@ -13,7 +13,21 @@ import { FORM_ERROR_MESSAGES } from '../Constants/form-error-messages';
 import AppContent from './AppContent';
 import 'Sass/app.scss';
 
+// Safely read a boolean flag from the persisted ui_store without ever throwing.
+const readStoredDarkMode = () => {
+    try {
+        const raw = window.localStorage.getItem('ui_store');
+        if (!raw) return false;
+        const parsed = JSON.parse(raw);
+        return !!parsed?.is_dark_mode_on;
+    } catch (e) {
+        return false;
+    }
+};
+
 const App = ({ root_store }) => {
+    // useSuspense:false prevents react-i18next from suspending the tree (frozen
+    // spinner) when translation files are unreachable on this domain.
     const i18nInstance = initializeI18n({
         cdnUrl: process.env.TRANSLATIONS_CDN_URL || '',
         useSuspense: false,
@@ -24,12 +38,12 @@ const App = ({ root_store }) => {
     const has_base = /^\/(br_)/.test(l.pathname);
     const { preferred_language } = root_store.client;
     const { is_dark_mode_on } = root_store.ui;
-    const is_dark_mode = is_dark_mode_on || JSON.parse(localStorage.getItem('ui_store'))?.is_dark_mode_on;
+    const is_dark_mode = is_dark_mode_on || readStoredDarkMode();
     const language = preferred_language ?? getInitialLanguage();
     const { isBridgeAvailable, sendBridgeEvent } = useMobileBridge();
 
     // Handle OAuth2 callback — the auth server redirects back to / with ?code=...&state=...
-    // No separate /callback route needs; we handle it inline here on every mount.
+    // No separate /callback route needed; we handle it inline here on every mount.
     React.useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const code = params.get('code');
@@ -78,9 +92,16 @@ const App = ({ root_store }) => {
     }, [isBridgeAvailable, sendBridgeEvent]);
 
     React.useEffect(() => {
-        sessionStorage.removeItem('redirect_url');
+        try {
+            sessionStorage.removeItem('redirect_url');
+        } catch (e) {
+            /* storage unavailable — ignore */
+        }
+
         const loadSmartchartsStyles = () => {
-            import('@deriv-com/smartcharts-champion/dist/smartcharts.css');
+            import('@deriv-com/smartcharts-champion/dist/smartcharts.css').catch(() => {
+                /* non-fatal */
+            });
         };
 
         // Check for theme query parameter and set theme accordingly
@@ -92,7 +113,6 @@ const App = ({ root_store }) => {
             root_store.ui.setDarkMode(false);
         }
 
-        // TODO: [translation-to-shared]: add translation implementation in shared
         setUrlLanguage(language);
         initFormErrorMessages(FORM_ERROR_MESSAGES);
         root_store.common.setPlatform();
