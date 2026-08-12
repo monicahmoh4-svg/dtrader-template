@@ -102,7 +102,6 @@ export const getTrustedDomainName = (): string => {
     return domain === getBrandDomain() ? domain : 'deriv.com';
 };
 
-// [FIX] Added VERCEL_PATTERN to allow OAuth redirects on Vercel domains
 const CLOUDFLARE_PAGES_PATTERN = /^[a-zA-Z0-9-]+\.derivatives-trader\.pages\.dev$/;
 const VERCEL_PATTERN = /\.vercel\.app$/;
 
@@ -113,7 +112,7 @@ export const getRedirectHostname = (): string => {
 
     if (domain === getBrandDomain()) return hostname;
     if (CLOUDFLARE_PAGES_PATTERN.test(hostname)) return hostname;
-    if (VERCEL_PATTERN.test(hostname)) return hostname; // Allow Vercel domains
+    if (VERCEL_PATTERN.test(hostname)) return hostname;
 
     return '';
 };
@@ -131,10 +130,12 @@ export const getAuthBaseUrl = (): string => {
 
 export const getOAuthClientId = (): string => {
     const client_id = process.env.OAUTH_CLIENT_ID;
-    if (!client_id)
-        throw new Error(
-            'OAUTH_CLIENT_ID is not set. Add it to your .env file for local dev or GitHub Environment secrets for CI.'
-        );
+    if (!client_id) {
+        // Return empty string instead of throwing to prevent app crash during initial render.
+        // Login will be non-functional until OAUTH_CLIENT_ID is configured.
+        console.warn('[Config] OAUTH_CLIENT_ID is not set. Login functionality is disabled.');
+        return '';
+    }
     return client_id;
 };
 
