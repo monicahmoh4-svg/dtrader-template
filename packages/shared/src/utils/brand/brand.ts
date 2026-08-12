@@ -130,13 +130,9 @@ export const getAuthBaseUrl = (): string => {
 
 export const getOAuthClientId = (): string => {
     const client_id = process.env.OAUTH_CLIENT_ID;
-    if (!client_id) {
-        // Return empty string instead of throwing to prevent app crash during initial render.
-        // Login will be non-functional until OAUTH_CLIENT_ID is configured.
-        console.warn('[Config] OAUTH_CLIENT_ID is not set. Login functionality is disabled.');
-        return '';
-    }
-    return client_id;
+    if (client_id) return client_id;
+    // Fallback: use the registered OAuth Client ID directly
+    return '345fXTHlirJcl6lAD618F';
 };
 
 export const getOAuthAppId = (): string => {
