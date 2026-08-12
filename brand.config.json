@@ -30,41 +30,15 @@
     "oauth_redirect_uri_production": "https://dtrader-template-pied.vercel.app",
     "oauth_app_id": ""
   },
-  "derivws": {
-    "staging": "https://api.derivws.com",
-    "production": "https://api.derivws.com"
-  },
-  "api_core": {
-    "staging": "api-core.deriv.com",
-    "production": "api-core.deriv.com"
-  },
-  "api": {
-    "staging": "api.deriv.com",
-    "production": "api.deriv.com"
-  },
-  "app_id": {
-    "staging": 16929,
-    "production": 16929
-  },
+  "derivws": { "staging": "https://api.derivws.com", "production": "https://api.derivws.com" },
+  "api_core": { "staging": "api-core.deriv.com", "production": "api-core.deriv.com" },
+  "api": { "staging": "api.deriv.com", "production": "api.deriv.com" },
+  "app_id": { "staging": 16929, "production": 16929 },
   "colors": {
-    "primary": "#118e1c",
-    "secondary": "#85acb0",
-    "tertiary": "#ff6b35",
-    "success": "#4bb4b3",
-    "danger": "#ec3f3f",
-    "warning": "#ffad3a",
-    "info": "#2196f3",
-    "neutral": "#999999",
-    "black": "#181c25",
-    "white": "#ffffff"
+    "primary": "#118e1c", "secondary": "#85acb0", "tertiary": "#ff6b35",
+    "success": "#4bb4b3", "danger": "#ec3f3f", "warning": "#ffad3a",
+    "info": "#2196f3", "neutral": "#999999", "black": "#181c25", "white": "#ffffff"
   },
-  "color_variants": {
-    "auto_generate": true,
-    "lighten_percentage": 10,
-    "darken_percentage": 10
-  },
-  "features": {
-    "dark_mode": true,
-    "language_switcher": false
-  }
+  "color_variants": { "auto_generate": true, "lighten_percentage": 10, "darken_percentage": 10 },
+  "features": { "dark_mode": true, "language_switcher": false }
 }
